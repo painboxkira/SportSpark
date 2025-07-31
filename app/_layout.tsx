@@ -1,12 +1,15 @@
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
 import * as NavigationBar from 'expo-navigation-bar';
+import { Stack } from 'expo-router';
+import { SQLiteProvider } from 'expo-sqlite';
+import { StatusBar } from 'expo-status-bar';
+import { useEffect } from 'react';
 import 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { useEffect } from 'react';
+
+const ASSET = require('../assets/database/exercise.db');
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -15,30 +18,34 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
-    // Configure navigation bar for Android
     NavigationBar.setVisibilityAsync('hidden');
     NavigationBar.setBehaviorAsync('overlay-swipe');
   }, []);
 
   if (!loaded) {
-    // Async font loading only occurs in development.
     return null;
   }
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack screenOptions={{headerShown:false,}}>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <SafeAreaProvider>
-          <Stack.Screen name="ExerciseDB/(tabs)" options={{ headerShown: false }} />
-          </SafeAreaProvider> 
-        <SafeAreaProvider>
-        <Stack.Screen name="dashboard/(tabs)" options={{ headerShown: false }} />
-        </SafeAreaProvider>
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" hidden={true} />
-
+      <SafeAreaProvider>
+        <SQLiteProvider
+          databaseName="exercise.db"
+          assetSource={{ assetId: ASSET }}
+        >
+          <Stack
+            screenOptions={{ headerShown: false }}
+          >
+            {/* With Expo Router, screens are mostly defined via files, but you can declare specific ones if you want custom options */}
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="ExerciseDB/(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="ExerciseDB/(tabs)/Details" options={{ headerShown: false }} />
+            <Stack.Screen name="dashboard/(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="+not-found" />
+          </Stack>
+          <StatusBar style="auto" hidden={true} />
+        </SQLiteProvider>
+      </SafeAreaProvider>
     </ThemeProvider>
   );
 }

@@ -1,7 +1,7 @@
 // app/exercises/(tabs)/_layout.tsx
 
 import { Tabs } from 'expo-router';
-import { Dumbbell, Search } from 'lucide-react-native';
+import { Dumbbell, Info } from 'lucide-react-native';
 
 export default function Layout() {
   return (
@@ -21,10 +21,18 @@ export default function Layout() {
         }}
       />
       <Tabs.Screen
-        name="[muscle]"
+        name="muscle"
         options={{
-          title: 'By Muscle',
-          tabBarIcon: ({ color, size }) => <Search color={color} size={size} />,
+          title: 'Muscle',
+          tabBarIcon: ({ color, size }) => <Info color={color} size={size} />,
+        }}
+      />
+      <Tabs.Screen
+        name="Details"
+        options={{
+          title: 'Details',
+          href: null,
+          tabBarIcon: ({ color, size }) => <Info color={color} size={size} />,
         }}
       />
       {/* Add more screens as you add files */}
