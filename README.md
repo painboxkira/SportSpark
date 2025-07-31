@@ -71,7 +71,7 @@ This project is provided under the **MIT License**. See below for license text.
 
 **MIT License**
 
-Copyright (c) [YEAR] [OWNER]
+Copyright (c) [2025] painboxkira
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
