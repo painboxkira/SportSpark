@@ -1,75 +1,140 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { BlurView } from 'expo-blur';
+import { LinearGradient } from 'expo-linear-gradient';
+import { router } from 'expo-router';
+import React from 'react';
+import {
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity
+} from 'react-native';
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import Animated, {
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming
+} from 'react-native-reanimated';
 
 export default function HomeScreen() {
+  const opacity = useSharedValue(1);
+
+  const handlePress = () => {
+    // Animate fade out
+    opacity.value = withTiming(0, { duration: 500 }, () => {
+      runOnJS(router.replace)('/ExerciseDB/(tabs)');
+    });
+  };
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+    transform: [{ scale: withTiming(opacity.value, { duration: 500 }) }],
+  }));
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <LinearGradient
+      colors={['#E8E8E8', '#C0C0C0', '#808080', '#4A4A4A', '#2C2C2C']}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={styles.container}
+    >
+      <Animated.View style={[styles.headerView, animatedStyle]}>
+        <BlurView intensity={60} tint="light" style={styles.logoBlurWrapper}>
+          <LinearGradient
+            colors={[
+              'rgba(255,255,255,0.3)',
+              'rgba(200,200,255,0.2)',
+              'rgba(150,150,255,0.1)',
+            ]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.logoGradientOverlay}
+          >
+            <Image
+              source={require('../../assets/images/logo.png')}
+              style={styles.logo}
+            />
+          </LinearGradient>
+        </BlurView>
+
+        <TouchableOpacity onPress={handlePress} style={styles.button}>
+          <LinearGradient
+            colors={['#1A1A1A', '#2D2D2D', '#404040']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.buttonGradient}
+          >
+            <Text style={styles.buttonText}>UNLEASH THE BEAST</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+      </Animated.View>
+    </LinearGradient>
   );
 }
-
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
+  container: {
+    flex: 1,
+  },
+
+  headerView: {
+    flex: 1,
+    justifyContent: 'center', // ⬇️ Center logo & button vertically
     alignItems: 'center',
-    gap: 8,
+    paddingHorizontal: 24,
+    gap: 40, // 🧃 Space between logo and button
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+
+  logoBlurWrapper: {
+    borderRadius: 25,
+    overflow: 'hidden',
+    elevation: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+
+  logoGradientOverlay: {
+    borderRadius: 25,
+    padding: 6,
+  },
+
+  logo: {
+    width: 280,
+    height: 280,
+    resizeMode: 'contain',
+    borderRadius: 21,
+  },
+
+  button: {
+    borderRadius: 16,
+    elevation: 12,
+    shadowColor: '#1A1A1A',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.6,
+    shadowRadius: 12,
+    borderWidth: 2,
+    borderColor: '#404040',
+  },
+
+  buttonGradient: {
+    paddingHorizontal: 40,
+    paddingVertical: 18,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: 220,
+  },
+
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: '800',
+    textTransform: 'uppercase',
+    letterSpacing: 1.5,
+    textShadowColor: 'rgba(0, 0, 0, 0.8)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
+    textAlign: 'center',
   },
 });
