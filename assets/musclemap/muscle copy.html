@@ -147,45 +147,72 @@ body {
     </aside>
 
     <script>
-    /* same MUSCLE_INFO + click logic … */
-    // flip() – swap front <section> and rear <section>, clear any highlight
-function flip() {
-  // 1. toggle visibility of every .view block (front & rear)
-  document.querySelectorAll('.view').forEach(v => (v.hidden = !v.hidden));
+    // Fetch muscle loads from React Native wrapper
+    let MUSCLE_LOADS = {};
 
-  // 2. remove red highlight from anything that was selected
-  document
-    .querySelectorAll('.is-selected')
-    .forEach(n => n.classList.remove('is-selected'));
-
-  // 3. close the info panel if it’s open
-  document.getElementById('info-panel').hidden = true;
-}
-
-/* wire it up */
-document.getElementById('flip').onclick = flip;                // in-page button
-window.addEventListener('message', e => e.data === 'flip' && flip()); // from React-Native
-
-  /* pick the best event for this device */
-const TAP = 'onpointerdown' in window     ? 'pointerdown'   :
-            'ontouchstart'  in window     ? 'touchstart'    :
-                                            'click';        // desktop fallback
-                                            // 
-document.querySelectorAll('.bodymap').forEach(element => {
-  element.addEventListener(TAP, () => {
-    if(element.classList.contains('is-selected')) {
-      element.classList.remove('is-selected');
-    }else{
-      document.querySelectorAll('.is-selected')
-          .forEach(n => n.classList.remove('is-selected')); 
-      element.classList.add('is-selected');
+    function fetchMuscleLoads() {
+      // Request data from React Native
+      window.ReactNativeWebView?.postMessage('getMuscleLoads');
+      console.log('Requesting muscle loads from React Native');
     }
-    // Send muscle ID to React Native
-    window.ReactNativeWebView?.postMessage(element.id);
-  });
-});                                         
- 
-  </script>
+
+    // Unified message handler for both browser and React Native WebView
+    function handleMessage(e) {
+      console.log('Received message:', e);
+      let data = e && e.data ? e.data : e;
+      if (data && typeof data === 'string') {
+      try {
+        const msg = JSON.parse(data);
+        if (msg.type === 'muscleLoads' && typeof msg.data === 'object') {
+        MUSCLE_LOADS = msg.data;
+        colorizeMuscles();
+        }
+      } catch {}
+      }
+      if (data === 'flip') flip();
+    }
+
+    // Listen for data from React Native (browser event)
+    document.addEventListener('message', handleMessage);
+    fetchMuscleLoads();
+
+    // Utility: interpolate color from green to red
+    function getColor(load) {
+      // If load is undefined, return green
+      if (typeof load === 'undefined') return 'rgb(0,255,0)';
+      // Clamp load between 0 and 1
+      load = Math.max(0, Math.min(1, load));
+      // Green (0, 255, 0) to Red (255, 0, 0)
+      const r = Math.round(255 * load);
+      const g = Math.round(255 * (1 - load));
+      return `rgb(${r},${g},0)`;
+    }
+
+    // Apply color scale to each muscle
+    function colorizeMuscles() {
+      document.querySelectorAll('.bodymap').forEach(element => {
+      const load = MUSCLE_LOADS[element.id];
+      console.log(`Colorizing ${element.id} with load: ${load}`);
+      element.querySelectorAll('path').forEach(path => {
+        path.style.fill = getColor(load);
+      });
+      });
+    }
+
+    // Flip logic (unchanged)
+    function flip() {
+      document.querySelectorAll('.view').forEach(v => (v.hidden = !v.hidden));
+      document.querySelectorAll('.is-selected').forEach(n => n.classList.remove('is-selected'));
+      document.getElementById('info-panel').hidden = true;
+      colorizeMuscles(); // re-apply colors after flip
+    }
+
+    document.getElementById('flip').onclick = flip;
+    window.addEventListener('message', e => e.data === 'flip' && flip());
+
+    // Initial colorization
+    colorizeMuscles();
+    </script>
   </body>
 </html>
 

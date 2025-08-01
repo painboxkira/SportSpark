@@ -1,7 +1,8 @@
 import { useExerciseDetails } from '@/hooks/useExerciseDetails';
+import { BlurView } from 'expo-blur';
 import { useLocalSearchParams } from 'expo-router';
 import { Dumbbell, ExternalLink, Flame, Settings, Target, TrendingUp, Wrench, Zap } from 'lucide-react-native';
-import { Image, Linking, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image, ImageBackground, Linking, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 const BASE_IMAGE_URL = 'https://mediumvioletred-dogfish-712473.hostingersite.com/exercises/';
 const getImageUrl = (imgFolder: string, index: number) =>
@@ -13,24 +14,36 @@ export default function ExerciseDetail() {
 
   if (error) {
     return (
-      <View style={styles.container}>
-        <View style={styles.errorContainer}>
-          <Flame size={48} color="#ffdb57" style={{ marginBottom: 15 }} />
-          <Text style={styles.errorText}>EXERCISE NOT FOUND, BRO!</Text>
-          <Text style={styles.errorSubtext}>{error}</Text>
+      <ImageBackground
+        source={require('../../../assets/images/bgmuscle.png')}
+        style={styles.bg}
+        resizeMode="cover"
+      >
+        <View style={styles.container}>
+          <View style={styles.errorContainer}>
+            <Flame size={48} color="#ffdb57" style={{ marginBottom: 15 }} />
+            <Text style={styles.errorText}>EXERCISE NOT FOUND, BRO!</Text>
+            <Text style={styles.errorSubtext}>{error}</Text>
+          </View>
         </View>
-      </View>
+      </ImageBackground>
     );
   }
 
   if (!exercise) {
     return (
-      <View style={styles.container}>
-        <View style={styles.loadingContainer}>
-          <Flame size={48} color="#ffdb57" style={{ marginBottom: 15 }} />
-          <Text style={styles.loadingText}>LOADING GAINS...</Text>
+      <ImageBackground
+        source={require('../../../assets/images/bgmuscle.png')}
+        style={styles.bg}
+        resizeMode="cover"
+      >
+        <View style={styles.container}>
+          <View style={styles.loadingContainer}>
+            <Flame size={48} color="#ffdb57" style={{ marginBottom: 15 }} />
+            <Text style={styles.loadingText}>LOADING GAINS...</Text>
+          </View>
         </View>
-      </View>
+      </ImageBackground>
     );
   }
 
@@ -50,142 +63,146 @@ export default function ExerciseDetail() {
   }
 
   return (
-    <ScrollView style={styles.scrollView} contentContainerStyle={styles.container}>
-      {/* HERO TITLE */}
-      <View style={styles.heroSection}>
-        <View style={styles.heroTitleContainer}>
-          <Dumbbell size={32} color="#ffdb57" />
-          <Text style={styles.heroTitle}>{exercise.name.toUpperCase()}</Text>
-          <Dumbbell size={32} color="#ffdb57" />
-        </View>
-        <Text style={styles.heroSubtitle}>TIME TO GET SWOLE!</Text>
-      </View>
+    <ImageBackground
+      source={require('../../../assets/images/bgmuscle.png')}
+      style={styles.bg}
+      resizeMode="cover"
+    >
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.container}>
+        {/* HERO TITLE */}
+        <BlurView intensity={60} tint="dark" style={styles.heroSection}>
+          <View style={styles.heroTitleContainer}>
+            <Dumbbell size={32} color="#ffdb57" />
+            <Text style={styles.heroTitle}>{exercise.name.toUpperCase()}</Text>
+            <Dumbbell size={32} color="#ffdb57" />
+          </View>
+          <Text style={styles.heroSubtitle}>TIME TO GET SWOLE!</Text>
+        </BlurView>
 
-      {/* EXERCISE IMAGES */}
-      <View style={styles.imageSection}>
-        <View style={styles.sectionTitleContainer}>
-          <Target size={24} color="#ffdb57" />
-          <Text style={styles.sectionTitle}>FORM CHECK</Text>
-        </View>
-        <View style={styles.imgRow}>
-          <View style={styles.imageContainer}>
-            <Image
-              source={{ uri: getImageUrl(exercise.imgFolder, 0) }}
-              style={styles.image}
-              resizeMode="contain"
-            />
-            <Text style={styles.imageLabel}>START</Text>
-          </View>
-          <View style={styles.imageContainer}>
-            <Image
-              source={{ uri: getImageUrl(exercise.imgFolder, 1) }}
-              style={styles.image}
-              resizeMode="contain"
-            />
-            <Text style={styles.imageLabel}>FINISH</Text>
-          </View>
-        </View>
-      </View>
-
-      {/* EXERCISE STATS */}
-      <View style={styles.statsSection}>
-        <View style={styles.sectionTitleContainer}>
-          <Zap size={24} color="#ffdb57" />
-          <Text style={styles.sectionTitle}>EXERCISE INTEL</Text>
-        </View>
-        
-        <View style={styles.statsGrid}>
-          <View style={styles.statCard}>
-            <Target size={20} color="#ffdb57" style={{ marginBottom: 5 }} />
-            <Text style={styles.statLabel}>TARGET</Text>
-            <Text style={styles.statValue}>{exercise.bodyPart?.toUpperCase()}</Text>
-          </View>
-          
-          <View style={styles.statCard}>
-            <Zap size={20} color="#ffdb57" style={{ marginBottom: 5 }} />
-            <Text style={styles.statLabel}>MUSCLE</Text>
-            <Text style={styles.statValue}>{exercise.mainMuscle?.toUpperCase()}</Text>
-          </View>
-          
-          <View style={styles.statCard}>
-            <Dumbbell size={20} color="#ffdb57" style={{ marginBottom: 5 }} />
-            <Text style={styles.statLabel}>GEAR</Text>
-            <Text style={styles.statValue}>{exercise.equipment?.toUpperCase()}</Text>
-          </View>
-          
-          <View style={styles.statCard}>
-            <TrendingUp size={20} color="#ffdb57" style={{ marginBottom: 5 }} />
-            <Text style={styles.statLabel}>LEVEL</Text>
-            <Text style={styles.statValue}>{exercise.level?.toUpperCase()}</Text>
-          </View>
-          
-          {exercise.force && (
-            <View style={styles.statCard}>
-              <Flame size={20} color="#ffdb57" style={{ marginBottom: 5 }} />
-              <Text style={styles.statLabel}>FORCE</Text>
-              <Text style={styles.statValue}>{exercise.force?.toUpperCase()}</Text>
-            </View>
-          )}
-          
-          {exercise.mechanic && (
-            <View style={styles.statCard}>
-              <Settings size={20} color="#ffdb57" style={{ marginBottom: 5 }} />
-              <Text style={styles.statLabel}>TYPE</Text>
-              <Text style={styles.statValue}>{exercise.mechanic?.toUpperCase()}</Text>
-            </View>
-          )}
-        </View>
-      </View>
-
-      {/* INSTRUCTIONS */}
-      {instructionsText && (
-        <View style={styles.instructionsSection}>
+        {/* EXERCISE IMAGES */}
+        <BlurView intensity={60} tint="dark" style={styles.imageSection}>
           <View style={styles.sectionTitleContainer}>
-            <Wrench size={24} color="#ffdb57" />
-            <Text style={styles.sectionTitle}>HOW TO CRUSH IT</Text>
+            <Target size={24} color="#ffdb57" />
+            <Text style={styles.sectionTitle}>FORM CHECK</Text>
           </View>
-          <View style={styles.instructionsContainer}>
-            <Text style={styles.instructions}>{instructionsText}</Text>
+          <View style={styles.imgRow}>
+            <View style={styles.imageContainer}>
+              <Image
+                source={{ uri: getImageUrl(exercise.imgFolder, 0) }}
+                style={styles.image}
+                resizeMode="contain"
+              />
+              <Text style={styles.imageLabel}>START</Text>
+            </View>
+            <View style={styles.imageContainer}>
+              <Image
+                source={{ uri: getImageUrl(exercise.imgFolder, 1) }}
+                style={styles.image}
+                resizeMode="contain"
+              />
+              <Text style={styles.imageLabel}>FINISH</Text>
+            </View>
           </View>
-        </View>
-      )}
+        </BlurView>
 
-      {/* MUSCLE WIKI LINK */}
-      {exercise.muscleWiki && (
-        <View style={styles.linkSection}>
-          <View style={styles.wikiLinkContainer}>
-            <ExternalLink size={20} color="#ffdb57" />
-            <Text
-              style={styles.wikiLink}
-              onPress={() => Linking.openURL(exercise.muscleWiki)}
-            >
-              LEARN MORE ON MUSCLEWIKI
-            </Text>
-            <ExternalLink size={20} color="#ffdb57" />
+        {/* EXERCISE STATS */}
+        <BlurView intensity={60} tint="dark" style={styles.statsSection}>
+          <View style={styles.sectionTitleContainer}>
+            <Zap size={24} color="#ffdb57" />
+            <Text style={styles.sectionTitle}>EXERCISE INTEL</Text>
           </View>
-        </View>
-      )}
+          <View style={styles.statsGrid}>
+            <View style={styles.statCard}>
+              <Target size={20} color="#ffdb57" style={{ marginBottom: 5 }} />
+              <Text style={styles.statLabel}>TARGET</Text>
+              <Text style={styles.statValue}>{exercise.bodyPart?.toUpperCase()}</Text>
+            </View>
+            <View style={styles.statCard}>
+              <Zap size={20} color="#ffdb57" style={{ marginBottom: 5 }} />
+              <Text style={styles.statLabel}>MUSCLE</Text>
+              <Text style={styles.statValue}>{exercise.mainMuscle?.toUpperCase()}</Text>
+            </View>
+            <View style={styles.statCard}>
+              <Dumbbell size={20} color="#ffdb57" style={{ marginBottom: 5 }} />
+              <Text style={styles.statLabel}>GEAR</Text>
+              <Text style={styles.statValue}>{exercise.equipment?.toUpperCase()}</Text>
+            </View>
+            <View style={styles.statCard}>
+              <TrendingUp size={20} color="#ffdb57" style={{ marginBottom: 5 }} />
+              <Text style={styles.statLabel}>LEVEL</Text>
+              <Text style={styles.statValue}>{exercise.level?.toUpperCase()}</Text>
+            </View>
+            {exercise.force && (
+              <View style={styles.statCard}>
+                <Flame size={20} color="#ffdb57" style={{ marginBottom: 5 }} />
+                <Text style={styles.statLabel}>FORCE</Text>
+                <Text style={styles.statValue}>{exercise.force?.toUpperCase()}</Text>
+              </View>
+            )}
+            {exercise.mechanic && (
+              <View style={styles.statCard}>
+                <Settings size={20} color="#ffdb57" style={{ marginBottom: 5 }} />
+                <Text style={styles.statLabel}>TYPE</Text>
+                <Text style={styles.statValue}>{exercise.mechanic?.toUpperCase()}</Text>
+              </View>
+            )}
+          </View>
+        </BlurView>
 
-      {/* MOTIVATIONAL FOOTER */}
-      <View style={styles.footer}>
-        <View style={styles.footerContainer}>
-          <Flame size={24} color="#ffdb57" />
-          <Text style={styles.footerText}>NO PAIN, NO GAIN!</Text>
-          <Flame size={24} color="#ffdb57" />
-        </View>
-      </View>
-    </ScrollView>
+        {/* INSTRUCTIONS */}
+        {instructionsText && (
+          <BlurView intensity={60} tint="dark" style={styles.instructionsSection}>
+            <View style={styles.sectionTitleContainer}>
+              <Wrench size={24} color="#ffdb57" />
+              <Text style={styles.sectionTitle}>HOW TO CRUSH IT</Text>
+            </View>
+            <View style={styles.instructionsContainer}>
+              <Text style={styles.instructions}>{instructionsText}</Text>
+            </View>
+          </BlurView>
+        )}
+
+        {/* MUSCLE WIKI LINK */}
+        {exercise.muscleWiki && (
+          <BlurView intensity={60} tint="dark" style={styles.linkSection}>
+            <View style={styles.wikiLinkContainer}>
+              <ExternalLink size={20} color="#ffdb57" />
+              <Text
+                style={styles.wikiLink}
+                onPress={() => Linking.openURL(exercise.muscleWiki)}
+              >
+                LEARN MORE ON MUSCLEWIKI
+              </Text>
+              <ExternalLink size={20} color="#ffdb57" />
+            </View>
+          </BlurView>
+        )}
+
+        {/* MOTIVATIONAL FOOTER */}
+        <BlurView intensity={60} tint="dark" style={styles.footer}>
+          <View style={styles.footerContainer}>
+            <Flame size={24} color="#ffdb57" />
+            <Text style={styles.footerText}>NO PAIN, NO GAIN!</Text>
+            <Flame size={24} color="#ffdb57" />
+          </View>
+        </BlurView>
+      </ScrollView>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
+  bg: {
+    flex: 1,
+    width: '100%',
+  },
   scrollView: {
-    backgroundColor: '#00509d',
+    backgroundColor: 'transparent',
   },
   container: {
     flexGrow: 1,
     padding: 20,
-    backgroundColor: '#00509d',
+    backgroundColor: 'transparent',
   },
   
   // ERROR & LOADING STATES

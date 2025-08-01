@@ -1,14 +1,14 @@
-import { BlurView } from 'expo-blur';
-import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import React from 'react';
 import {
   Image,
+  ImageBackground, // <-- Add this import
   StyleSheet,
   Text,
   TouchableOpacity
 } from 'react-native';
 
+import { LinearGradient } from 'expo-linear-gradient';
 import Animated, {
   runOnJS,
   useAnimatedStyle,
@@ -22,7 +22,7 @@ export default function HomeScreen() {
   const handlePress = () => {
     // Animate fade out
     opacity.value = withTiming(0, { duration: 500 }, () => {
-      runOnJS(router.replace)('/ExerciseDB/(tabs)');
+      runOnJS(router.push)('/dashboard/(tabs)');
     });
   };
 
@@ -32,30 +32,16 @@ export default function HomeScreen() {
   }));
 
   return (
-    <LinearGradient
-      colors={['#E8E8E8', '#C0C0C0', '#808080', '#4A4A4A', '#2C2C2C']}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
+    <ImageBackground
+      source={require('../../assets/images/background.png')}
       style={styles.container}
+      resizeMode="cover"
     >
       <Animated.View style={[styles.headerView, animatedStyle]}>
-        <BlurView intensity={60} tint="light" style={styles.logoBlurWrapper}>
-          <LinearGradient
-            colors={[
-              'rgba(255,255,255,0.3)',
-              'rgba(200,200,255,0.2)',
-              'rgba(150,150,255,0.1)',
-            ]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.logoGradientOverlay}
-          >
-            <Image
-              source={require('../../assets/images/logo.png')}
-              style={styles.logo}
-            />
-          </LinearGradient>
-        </BlurView>
+          <Image
+            source={require('../../assets/images/logo.png')}
+            style={[styles.logo, { backgroundColor: 'transparent' }]}
+          />
 
         <TouchableOpacity onPress={handlePress} style={styles.button}>
           <LinearGradient
@@ -68,7 +54,7 @@ export default function HomeScreen() {
           </LinearGradient>
         </TouchableOpacity>
       </Animated.View>
-    </LinearGradient>
+    </ImageBackground>
   );
 }
 const styles = StyleSheet.create({
@@ -94,11 +80,6 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
   },
 
-  logoGradientOverlay: {
-    borderRadius: 25,
-    padding: 6,
-  },
-
   logo: {
     width: 280,
     height: 280,
@@ -107,8 +88,10 @@ const styles = StyleSheet.create({
   },
 
   button: {
+   marginTop: 200,
+    backgroundColor: '#1A1A1A', 
     borderRadius: 16,
-    elevation: 12,
+    elevation: 1,
     shadowColor: '#1A1A1A',
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.6,
@@ -118,6 +101,8 @@ const styles = StyleSheet.create({
   },
 
   buttonGradient: {
+    
+    marginBottom: 0,
     paddingHorizontal: 40,
     paddingVertical: 18,
     borderRadius: 14,

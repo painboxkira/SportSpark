@@ -1,9 +1,10 @@
-import React, { useRef, useState } from 'react';
-import { Dimensions, Linking, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { WebView } from 'react-native-webview';
-import { SQLiteProvider, useSQLiteContext } from 'expo-sqlite';
-import { useRouter } from 'expo-router';
 import { useMuscleData } from '@/hooks/useMuscleData';
+import { BlurView } from 'expo-blur';
+import { useRouter } from 'expo-router';
+import { SQLiteProvider } from 'expo-sqlite';
+import React, { useRef, useState } from 'react';
+import { Dimensions, ImageBackground, Linking, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { WebView } from 'react-native-webview';
 
 const { width } = Dimensions.get('window');
 const ASSET = require('../../../assets/database/exercise.db');
@@ -72,7 +73,6 @@ function MuscleContent() {
   const [muscle, setMuscle] = useState<string | null>(null);
   const webref = useRef<WebView>(null);
   const router = useRouter();
-  // Use mapped muscle name for database queries
   const mappedMuscleName = muscle ? MUSCLE_ID_MAP[muscle] || muscle : null;
   const { muscleData, loading, error } = useMuscleData(mappedMuscleName);
 
@@ -96,47 +96,53 @@ function MuscleContent() {
   };
 
   return (
-    <View style={styles.container}>
+    <ImageBackground
+      source={require('../../../assets/images/bgmuscle.png')}
+      style={styles.bg}
+      resizeMode="cover"
+    >
       <WebView
         ref={webref}
-        style={{ width, flex: 1, height: '100%', marginTop: 24 }}
+        style={{ width, flex: 1, height: '100%', marginTop: 24, backgroundColor: 'transparent' }}
         originWhitelist={['*']}
         source={require('../../../assets/musclemap/muscle.html')}
         onMessage={e => {
           const id = e.nativeEvent.data;
-          console.log('Received muscle ID:', id);
           setMuscle(id);
         }}
       />
 
       {muscle && (
-        <View style={styles.card}>
-          <Pressable style={styles.closeButton} onPress={() => setMuscle(null)}>
-            <Text style={styles.closeText}>×</Text>
-          </Pressable>
-          
-          <Text style={styles.title}>{muscle.toUpperCase()}</Text>
-          <Text style={styles.body}>{BLURB[muscle]}</Text>
-          
-          <View style={styles.buttonContainer}>
-            {muscleData?.wiki && (
-              <TouchableOpacity style={styles.wikiButton} onPress={handleOpenWiki}>
-                <Text style={styles.buttonText}>MuscleWiki</Text>
-              </TouchableOpacity>
-            )}
+        <BlurView intensity={60} tint="dark" style={styles.cardBlur}>
+          <View style={styles.card}>
+            <Pressable style={styles.closeButton} onPress={() => setMuscle(null)}>
+              <Text style={styles.closeText}>×</Text>
+            </Pressable>
             
-            <TouchableOpacity style={styles.exerciseButton} onPress={handleSeeExercises}>
-              <Text style={styles.buttonText}>See Exercises</Text>
-            </TouchableOpacity>
+            <Text style={styles.title}>{muscle.toUpperCase()}</Text>
+            <Text style={styles.body}>{BLURB[muscle]}</Text>
+            
+            <View style={styles.buttonContainer}>
+              {muscleData?.wiki && (
+                <TouchableOpacity style={styles.wikiButton} onPress={handleOpenWiki}>
+                  <Text style={styles.buttonText}>MuscleWiki</Text>
+                </TouchableOpacity>
+              )}
+              
+              <TouchableOpacity style={styles.exerciseButton} onPress={handleSeeExercises}>
+                <Text style={styles.buttonText}>See Exercises</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
+        </BlurView>
       )}
-    </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0b0e14',height: '100%' },
+  bg: { flex: 1, width: '100%', height: '100%' },
+  container: { flex: 1, backgroundColor: 'transparent', height: '100%' },
   fab: {
     position: 'absolute',
     bottom: 32,
@@ -149,15 +155,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     elevation: 8,
   },
-  card: {
+  cardBlur: {
     position: 'absolute',
     bottom: 108,
     left: 20,
     right: 20,
-    backgroundColor: '#1e212b',
+    borderRadius: 14,
+    overflow: 'hidden',
+    elevation: 10,
+  },
+  card: {
+    backgroundColor: 'rgba(30,33,43,0.7)',
     borderRadius: 14,
     padding: 16,
-    elevation: 10,
   },
   title: { fontSize: 18, fontWeight: '600', color: '#ff6f92', marginBottom: 6 },
   body: { fontSize: 14, lineHeight: 19, color: '#c6cad9', marginBottom: 16 },
@@ -171,10 +181,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#ff6f92',
     alignItems: 'center',
     justifyContent: 'center',
-    // Ensure it's above other elements
     zIndex: 1000,
     elevation: 10,
-    // Large touch area
     paddingHorizontal: 12,
     paddingVertical: 8,
   },

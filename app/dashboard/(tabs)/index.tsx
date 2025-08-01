@@ -1,16 +1,18 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { useDashboardBackground } from '@/hooks/useDashboardBackground';
+import { StyleSheet, Text } from 'react-native';
 
 export default function DashboardHome() {
+  const DashboardBackground = useDashboardBackground();
   return (
-    <View style={styles.container}>
+    <DashboardBackground>
       <Text style={styles.text}>💪 Welcome to your Dashboard</Text>
-    </View>
+    </DashboardBackground>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1, backgroundColor: '#1A1A1A', justifyContent: 'center', alignItems: 'center',
+    justifyContent: 'center', alignItems: 'center',
   },
   text: {
     color: '#F9D342', fontSize: 24, fontWeight: 'bold',

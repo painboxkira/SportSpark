@@ -1,10 +1,26 @@
-import { Text, View } from 'react-native';
+import { useDashboardBackground } from '@/hooks/useDashboardBackground';
+import { StyleSheet, Text } from 'react-native';
 
 export default function ProfileScreen() {
+  const DashboardBackground = useDashboardBackground();
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text style={{ fontSize: 24 }}>👤 Profile</Text>
-      <Text>Manage your identity and preferences.</Text>
-    </View>
+    <DashboardBackground>
+      <Text style={styles.title}>👤 Profile</Text>
+      <Text style={styles.subtitle}>Manage your identity and preferences.</Text>
+    </DashboardBackground>
   );
 }
+
+const styles = StyleSheet.create({
+  title: {
+    fontSize: 24,
+    color: '#F9D342',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  subtitle: {
+    color: '#fff',
+    textAlign: 'center',
+    marginTop: 8,
+  },
+});
