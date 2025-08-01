@@ -195,7 +195,8 @@ document.querySelectorAll('.bodymap').forEach(element => {
           .forEach(n => n.classList.remove('is-selected')); 
       element.classList.add('is-selected');
     }
-    console.log(element.id);
+    // Send muscle ID to React Native
+    window.ReactNativeWebView?.postMessage(element.id);
   });
 });                                         
  

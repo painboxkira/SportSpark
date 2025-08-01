@@ -35,6 +35,14 @@ export default function Layout() {
           tabBarIcon: ({ color, size }) => <Info color={color} size={size} />,
         }}
       />
+      <Tabs.Screen
+        name="filteredIndex"
+        options={{
+          title: 'Filtered',
+          href: null,
+          tabBarIcon: ({ color, size }) => <Info color={color} size={size} />,
+        }}
+      />
       {/* Add more screens as you add files */}
     </Tabs>
   );
